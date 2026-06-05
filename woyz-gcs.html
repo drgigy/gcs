@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WOYZ GCS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #f5f6f8;
+  --white:    #ffffff;
+  --border:   #e8eaed;
+  --border2:  #d0d4db;
+  --text:     #0d1117;
+  --text2:    #5a6270;
+  --text3:    #9aa0ab;
+  --blue:     #0057b8;
+  --blue-bg:  #e8f0fb;
+  --blue-mid: #4a90d9;
+  --green:    #0a7c42;
+  --green-bg: #e6f4ec;
+  --amber:    #b45309;
+  --amber-bg: #fef3e2;
+  --red:      #c0392b;
+  --red-bg:   #fdecea;
+  --purple:   #6c3eb5;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 2px 8px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.05);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
+  --radius:    12px;
+  --radius-sm: 8px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:15px;}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── TOP NAVIGATION BAR ── */
+.nav-bar{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:0 16px;
+  height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:var(--shadow-sm);
+}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-logo-icon{
+  width:30px;height:30px;
+  background:var(--blue);
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;
+}
+.nav-logo-text{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);letter-spacing:-.01em;}
+.nav-logo-text span{color:var(--blue);}
+.nav-title{font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.01em;}
+.nav-action{font-size:13px;color:var(--blue);font-weight:600;cursor:pointer;padding:6px 0;}
+
+/* ── SCROLL AREA ── */
+.scroll-area{padding:16px 16px 80px;}
+
+/* ── SECTION HEADERS ── */
+.section-header{
+  font-size:11px;font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;
+  color:var(--text3);
+  margin:20px 0 8px;
+  padding-left:4px;
+}
+.section-header:first-child{margin-top:0;}
+
+/* ── CARD ── */
+.card{
+  background:var(--white);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  margin-bottom:10px;
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+
+/* ── PATIENT FIELDS ── */
+.field-row{display:flex;border-bottom:1px solid var(--border);}
+.field-row:last-child{border-bottom:none;}
+.field-item{flex:1;padding:12px 14px;border-right:1px solid var(--border);}
+.field-item:last-child{border-right:none;}
+.field-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.field-input{width:100%;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;color:var(--text);background:transparent;}
+.field-input::placeholder{color:var(--text3);font-weight:400;}
+
+/* ── CONTEXT CHIPS ── */
+.chip-scroll{display:flex;gap:6px;overflow-x:auto;padding:12px 14px;padding-bottom:8px;scrollbar-width:none;}
+.chip-scroll::-webkit-scrollbar{display:none;}
+.ctx-chip{
+  flex-shrink:0;
+  padding:5px 12px;
+  background:var(--bg);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  font-size:12px;font-weight:500;
+  color:var(--text2);
+  cursor:pointer;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.ctx-chip:active{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.context-inp{
+  width:100%;border:none;outline:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;color:var(--text);
+  padding:0 14px 12px;
+  background:transparent;
+  resize:none;line-height:1.6;
+}
+.context-inp::placeholder{color:var(--text3);}
+
+/* ── GCS COMPONENT CARD ── */
+.gcs-comp-card{
+  background:var(--white);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  margin-bottom:10px;
+  overflow:hidden;
+  box-shadow:var(--shadow-sm);
+  transition:border-color .2s;
+}
+.gcs-comp-card.active{border-color:var(--blue);}
+.gcs-comp-head{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:13px 16px;
+  border-bottom:1px solid var(--border);
+}
+.gcs-comp-left{display:flex;align-items:center;gap:10px;}
+.gcs-key{
+  width:34px;height:34px;
+  background:var(--blue);
+  border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;
+  font-size:18px;color:white;font-weight:400;
+}
+.gcs-comp-name{font-size:14px;font-weight:600;color:var(--text);}
+.gcs-comp-sub{font-size:11.5px;color:var(--text3);margin-top:1px;}
+.score-pill{
+  min-width:44px;height:30px;
+  border-radius:15px;
+  background:var(--bg);
+  border:1.5px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Serif Display',serif;
+  font-size:15px;color:var(--text2);
+  font-weight:400;transition:all .25s;
+}
+.score-pill.set{background:var(--blue);border-color:var(--blue);color:white;}
+
+/* ── SCORE BUTTONS ── */
+.score-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
+  gap:8px;
+  padding:14px 14px;
+}
+.score-btn{
+  background:var(--bg);
+  border:1.5px solid var(--border2);
+  border-radius:10px;
+  padding:11px 8px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .15s;
+  -webkit-user-select:none;
+}
+.score-btn:active{transform:scale(.95);}
+.score-btn.sel{
+  background:var(--blue);
+  border-color:var(--blue);
+}
+.score-btn .sv{
+  font-family:'DM Serif Display',serif;
+  font-size:22px;color:var(--text);
+  display:block;line-height:1;margin-bottom:4px;
+  transition:color .15s;
+}
+.score-btn .sl{
+  font-size:10.5px;font-weight:500;
+  color:var(--text2);display:block;
+  line-height:1.3;transition:color .15s;
+}
+.score-btn.sel .sv{color:white;}
+.score-btn.sel .sl{color:rgba(255,255,255,.75);}
+
+/* ── INTUBATED ── */
+.intubated-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:13px 16px;
+  margin-bottom:10px;
+  box-shadow:var(--shadow-sm);
+  cursor:pointer;
+}
+.intubated-row input[type=checkbox]{
+  width:18px;height:18px;
+  accent-color:var(--blue);
+  cursor:pointer;flex-shrink:0;
+}
+.intubated-text{font-size:13.5px;color:var(--text2);line-height:1.4;}
+.intubated-text strong{color:var(--blue);}
+
+/* ── TOTAL CARD ── */
+.total-card{
+  background:var(--blue);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin-bottom:10px;
+  box-shadow:var(--shadow-lg);
+  position:relative;
+  overflow:hidden;
+}
+.total-card::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:120px;height:120px;
+  background:rgba(255,255,255,.06);
+  border-radius:50%;
+}
+.total-card::after{
+  content:'';position:absolute;bottom:-40px;left:-20px;
+  width:100px;height:100px;
+  background:rgba(255,255,255,.04);
+  border-radius:50%;
+}
+.total-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;}
+.total-num{
+  font-family:'DM Serif Display',serif;
+  font-size:52px;color:white;
+  line-height:1;letter-spacing:-.02em;
+}
+.total-num-sub{font-size:16px;font-weight:400;opacity:.6;margin-left:2px;}
+.total-right-side{text-align:right;}
+.total-label-txt{font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px;}
+.sev-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 14px;border-radius:20px;
+  font-size:13px;font-weight:700;
+  background:rgba(255,255,255,.15);color:white;
+  margin-bottom:6px;
+}
+.total-detail-txt{font-size:12px;color:rgba(255,255,255,.60);font-family:'DM Serif Display',serif;font-style:italic;}
+.total-pending{
+  background:var(--white);
+  border:1.5px dashed var(--border2);
+  border-radius:var(--radius);
+  padding:18px 20px;
+  margin-bottom:10px;
+  display:flex;align-items:center;gap:14px;
+}
+.total-pending-icon{font-size:28px;}
+.total-pending-text{font-size:14px;color:var(--text2);line-height:1.5;}
+.total-pending-text strong{color:var(--text);font-weight:600;}
+
+/* ── PUPILS ── */
+.pupils-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border);}
+.pupil-col{padding:14px;}
+.pupil-col:first-child{border-right:1px solid var(--border);}
+.pupil-col-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px;}
+.pupil-size-row{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;}
+.p-btn{
+  padding:5px 7px;min-width:36px;
+  background:var(--bg);border:1.5px solid var(--border2);
+  border-radius:7px;font-size:11.5px;font-weight:600;
+  color:var(--text2);cursor:pointer;transition:all .15s;text-align:center;
+}
+.p-btn:active{transform:scale(.92);}
+.p-btn.sel{background:var(--blue);border-color:var(--blue);color:white;}
+.p-react-row{display:flex;gap:5px;}
+.p-react-btn{
+  flex:1;padding:6px 4px;
+  background:var(--bg);border:1.5px solid var(--border2);
+  border-radius:7px;font-size:11px;font-weight:600;
+  color:var(--text2);cursor:pointer;transition:all .15s;text-align:center;
+}
+.p-react-btn:active{transform:scale(.92);}
+.p-react-btn.sel.reactive{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+.p-react-btn.sel.sluggish{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);}
+.p-react-btn.sel.fixed   {background:var(--red-bg);  border-color:var(--red);  color:var(--red);}
+
+/* ── TEXT AREAS ── */
+.ta-card-input{
+  width:100%;border:none;outline:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;color:var(--text);
+  padding:12px 14px;
+  background:transparent;resize:none;line-height:1.7;
+}
+.ta-card-input::placeholder{color:var(--text3);}
+
+/* ── BOTTOM ACTION BAR ── */
+.action-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--white);
+  border-top:1px solid var(--border);
+  padding:10px 16px 16px;
+  display:flex;gap:8px;
+  box-shadow:0 -4px 16px rgba(0,0,0,.06);
+  z-index:100;
+}
+.action-bar-btn{
+  flex:1;padding:12px 8px;
+  border-radius:10px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:600;
+  cursor:pointer;border:none;
+  display:flex;align-items:center;
+  justify-content:center;gap:5px;
+  transition:all .15s;
+}
+.action-bar-btn:active{transform:scale(.96);}
+.action-bar-btn.primary{background:var(--blue);color:white;}
+.action-bar-btn.wa{background:#25d366;color:white;}
+.action-bar-btn.secondary{background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);}
+
+/* ── PREVIEW CARD ── */
+.preview-wrap{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  margin-bottom:10px;
+  box-shadow:var(--shadow-sm);
+  display:none;
+}
+.preview-head-bar{
+  background:var(--blue);
+  padding:14px 16px;
+}
+.preview-pat-name{font-family:'DM Serif Display',serif;font-size:20px;color:white;margin-bottom:2px;}
+.preview-pat-meta{font-size:12px;color:rgba(255,255,255,.65);}
+.preview-body-area{padding:14px 16px;}
+.prev-sec{margin-bottom:14px;}
+.prev-sec-title{font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--blue);margin-bottom:5px;}
+.prev-sec-body{font-size:13.5px;color:var(--text);line-height:1.75;white-space:pre-line;}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:80px;left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:var(--text);color:white;
+  border-radius:20px;padding:10px 20px;
+  font-size:13px;font-weight:500;
+  opacity:0;transition:all .25s;
+  pointer-events:none;z-index:999;
+  white-space:nowrap;
+  box-shadow:var(--shadow-lg);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── ANIMATIONS ── */
+.card,.gcs-comp-card,.intubated-row,.total-card,.total-pending,.preview-wrap{
+  animation:fadeUp .3s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── WHEEL PICKER ── */
+.picker-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:500;display:none;align-items:flex-end;
+  animation:fadeIn .2s ease;
+}
+.picker-overlay.open{display:flex;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.picker-sheet{
+  background:white;width:100%;
+  border-radius:18px 18px 0 0;
+  padding-bottom:env(safe-area-inset-bottom);
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.picker-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px 12px;
+  border-bottom:1px solid var(--border);
+}
+.picker-title{font-size:15px;font-weight:700;color:var(--text);}
+.picker-cancel{font-size:14px;color:var(--text2);cursor:pointer;padding:4px 0;}
+.picker-done{font-size:14px;font-weight:700;color:var(--blue);cursor:pointer;padding:4px 0;}
+.picker-body{display:flex;gap:0;padding:0;}
+.wheel-col{flex:1;position:relative;height:220px;overflow:hidden;cursor:grab;}
+.wheel-col:first-child{border-right:1px solid var(--border);}
+.wheel-scroll{
+  overflow-y:scroll;height:100%;
+  scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding:88px 0;
+}
+.wheel-scroll::-webkit-scrollbar{display:none;}
+.wheel-item{
+  height:44px;display:flex;align-items:center;justify-content:center;
+  scroll-snap-align:center;
+  font-size:17px;font-weight:400;color:var(--text2);
+  transition:all .15s;font-family:'DM Serif Display',serif;
+  cursor:pointer;
+}
+.wheel-item.center{
+  color:var(--text);font-weight:600;font-size:19px;
+}
+.wheel-highlight{
+  position:absolute;top:50%;left:0;right:0;
+  transform:translateY(-50%);
+  height:44px;
+  background:var(--blue-bg);
+  border-top:1.5px solid var(--blue);
+  border-bottom:1.5px solid var(--blue);
+  pointer-events:none;border-radius:6px;margin:0 12px;
+}
+.wheel-col-label{
+  position:absolute;top:0;left:0;right:0;
+  text-align:center;padding:8px 0 4px;
+  font-size:10px;font-weight:700;
+  letter-spacing:.09em;text-transform:uppercase;
+  color:var(--text3);background:white;z-index:2;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Nav bar -->
+<div class="nav-bar">
+  <a href="woyz-v2-prototype.html" class="nav-logo">
+    <div class="nav-logo-icon">🎙</div>
+    <div class="nav-logo-text">WO<span>YZ</span></div>
+  </a>
+  <div class="nav-title">GCS Assessment</div>
+  <div class="nav-action" onclick="resetAll()">Reset</div>
+</div>
+
+<!-- Scroll area -->
+<div class="scroll-area">
+
+  <!-- Patient -->
+  <div class="section-header">Patient</div>
+  <div class="card">
+    <div class="field-row">
+      <div class="field-item" style="flex:2;">
+        <div class="field-label">Name</div>
+        <input class="field-input" id="patName" placeholder="Patient name" autocomplete="off">
+      </div>
+      <div class="field-item" onclick="openAgePicker()">
+        <div class="field-label">Age / Sex</div>
+        <div class="field-input" id="patAge" style="color:var(--text);cursor:pointer;" data-val="">
+          <span id="ageDisplay" style="color:var(--text3);">Select</span>
+        </div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-item" style="flex:2;">
+        <div class="field-label">UHID</div>
+        <input class="field-input" id="patUhid" placeholder="Hospital ID" autocomplete="off">
+      </div>
+      <div class="field-item">
+        <div class="field-label">Date &amp; Time</div>
+        <div class="field-input" id="autoDateTime" style="color:var(--text2);font-size:13px;cursor:default;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clinical Context -->
+  <div class="section-header">Clinical Context</div>
+  <div class="card">
+    <div class="chip-scroll">
+      <div class="ctx-chip" onclick="setCtx('Post-ictal')">Post-ictal</div>
+      <div class="ctx-chip" onclick="setCtx('Head injury')">Head injury</div>
+      <div class="ctx-chip" onclick="setCtx('Metabolic encephalopathy')">Metabolic</div>
+      <div class="ctx-chip" onclick="setCtx('Stroke')">Stroke</div>
+      <div class="ctx-chip" onclick="setCtx('Post-operative')">Post-op</div>
+      <div class="ctx-chip" onclick="setCtx('ICU monitoring')">ICU</div>
+      <div class="ctx-chip" onclick="setCtx('Drug overdose')">Drug OD</div>
+    </div>
+    <textarea class="context-inp" id="clinCtx" rows="2" placeholder="Additional context..."></textarea>
+  </div>
+
+  <!-- GCS Components -->
+  <div class="section-header">GCS Components</div>
+
+  <!-- E -->
+  <div class="gcs-comp-card" id="cardE">
+    <div class="gcs-comp-head">
+      <div class="gcs-comp-left">
+        <div class="gcs-key">E</div>
+        <div>
+          <div class="gcs-comp-name">Eye Opening</div>
+          <div class="gcs-comp-sub">Maximum score: 4</div>
+        </div>
+      </div>
+      <div class="score-pill" id="pillE">—</div>
+    </div>
+    <div class="score-grid">
+      <button class="score-btn" onclick="sel('E',4)"><span class="sv">4</span><span class="sl">Spontaneous</span></button>
+      <button class="score-btn" onclick="sel('E',3)"><span class="sv">3</span><span class="sl">To Voice</span></button>
+      <button class="score-btn" onclick="sel('E',2)"><span class="sv">2</span><span class="sl">To Pain</span></button>
+      <button class="score-btn" onclick="sel('E',1)"><span class="sv">1</span><span class="sl">None</span></button>
+    </div>
+  </div>
+
+  <!-- V -->
+  <div class="gcs-comp-card" id="cardV">
+    <div class="gcs-comp-head">
+      <div class="gcs-comp-left">
+        <div class="gcs-key">V</div>
+        <div>
+          <div class="gcs-comp-name">Verbal Response</div>
+          <div class="gcs-comp-sub">Maximum score: 5</div>
+        </div>
+      </div>
+      <div class="score-pill" id="pillV">—</div>
+    </div>
+    <div class="score-grid" id="verbalGrid">
+      <button class="score-btn" onclick="sel('V',5)"><span class="sv">5</span><span class="sl">Oriented</span></button>
+      <button class="score-btn" onclick="sel('V',4)"><span class="sv">4</span><span class="sl">Confused</span></button>
+      <button class="score-btn" onclick="sel('V',3)"><span class="sv">3</span><span class="sl">Words</span></button>
+      <button class="score-btn" onclick="sel('V',2)"><span class="sv">2</span><span class="sl">Sounds</span></button>
+      <button class="score-btn" onclick="sel('V',1)"><span class="sv">1</span><span class="sl">None</span></button>
+    </div>
+  </div>
+
+  <!-- Intubated -->
+  <label class="intubated-row">
+    <input type="checkbox" id="intubChk" onchange="toggleIntub(this.checked)">
+    <div class="intubated-text">Patient intubated / tracheostomy —<br><strong>Verbal score = T</strong></div>
+  </label>
+
+  <!-- M -->
+  <div class="gcs-comp-card" id="cardM">
+    <div class="gcs-comp-head">
+      <div class="gcs-comp-left">
+        <div class="gcs-key">M</div>
+        <div>
+          <div class="gcs-comp-name">Motor Response</div>
+          <div class="gcs-comp-sub">Maximum score: 6</div>
+        </div>
+      </div>
+      <div class="score-pill" id="pillM">—</div>
+    </div>
+    <div class="score-grid">
+      <button class="score-btn" onclick="sel('M',6)"><span class="sv">6</span><span class="sl">Obeys</span></button>
+      <button class="score-btn" onclick="sel('M',5)"><span class="sv">5</span><span class="sl">Localises</span></button>
+      <button class="score-btn" onclick="sel('M',4)"><span class="sv">4</span><span class="sl">Withdraws</span></button>
+      <button class="score-btn" onclick="sel('M',3)"><span class="sv">3</span><span class="sl">Flex (Dec)</span></button>
+      <button class="score-btn" onclick="sel('M',2)"><span class="sv">2</span><span class="sl">Ext (Dec)</span></button>
+      <button class="score-btn" onclick="sel('M',1)"><span class="sv">1</span><span class="sl">None</span></button>
+    </div>
+  </div>
+
+  <!-- Total -->
+  <div class="section-header">Result</div>
+  <div id="totalWrap"></div>
+
+  <!-- Pupils -->
+  <div class="section-header">Pupils</div>
+  <div class="card">
+    <div class="pupils-grid">
+      <div class="pupil-col">
+        <div class="pupil-col-label">Right</div>
+        <div class="pupil-size-row" id="pRSize">
+          <button class="p-btn" onclick="setPupil('R','size',2)">2</button>
+          <button class="p-btn" onclick="setPupil('R','size',3)">3</button>
+          <button class="p-btn" onclick="setPupil('R','size',4)">4</button>
+          <button class="p-btn" onclick="setPupil('R','size',5)">5</button>
+          <button class="p-btn" onclick="setPupil('R','size',6)">6mm</button>
+        </div>
+        <div class="p-react-row" id="pRReact">
+          <button class="p-react-btn reactive" onclick="setPupil('R','react','reactive')">React</button>
+          <button class="p-react-btn sluggish" onclick="setPupil('R','react','sluggish')">Slug</button>
+          <button class="p-react-btn fixed"    onclick="setPupil('R','react','fixed')">Fixed</button>
+        </div>
+      </div>
+      <div class="pupil-col">
+        <div class="pupil-col-label">Left</div>
+        <div class="pupil-size-row" id="pLSize">
+          <button class="p-btn" onclick="setPupil('L','size',2)">2</button>
+          <button class="p-btn" onclick="setPupil('L','size',3)">3</button>
+          <button class="p-btn" onclick="setPupil('L','size',4)">4</button>
+          <button class="p-btn" onclick="setPupil('L','size',5)">5</button>
+          <button class="p-btn" onclick="setPupil('L','size',6)">6mm</button>
+        </div>
+        <div class="p-react-row" id="pLReact">
+          <button class="p-react-btn reactive" onclick="setPupil('L','react','reactive')">React</button>
+          <button class="p-react-btn sluggish" onclick="setPupil('L','react','sluggish')">Slug</button>
+          <button class="p-react-btn fixed"    onclick="setPupil('L','react','fixed')">Fixed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Impression -->
+  <div class="section-header">Clinical Notes</div>
+  <div class="card">
+    <div class="field-row"><div class="field-item" style="flex:1;">
+      <div class="field-label">Impression</div>
+    </div></div>
+    <textarea class="ta-card-input" id="impression" rows="2" placeholder="Level of consciousness, clinical significance..."></textarea>
+    <div style="height:1px;background:var(--border);"></div>
+    <div class="field-row"><div class="field-item" style="flex:1;">
+      <div class="field-label">Plan</div>
+    </div></div>
+    <textarea class="ta-card-input" id="plan" rows="2" placeholder="Airway · Imaging · Escalation · Neurosurgery referral..."></textarea>
+  </div>
+
+  <!-- Preview -->
+  <div class="section-header" id="previewHeader" style="display:none;">Note Preview</div>
+  <div class="preview-wrap" id="previewWrap">
+    <div class="preview-head-bar">
+      <div class="preview-pat-name" id="prevName">Patient</div>
+      <div class="preview-pat-meta" id="prevMeta"></div>
+    </div>
+    <div class="preview-body-area" id="prevBody"></div>
+  </div>
+
+</div>
+
+<!-- Bottom action bar -->
+<div class="action-bar">
+  <button class="action-bar-btn secondary" onclick="copyNote()">⎘ Copy</button>
+  <button class="action-bar-btn primary" onclick="showPreview()">Preview</button>
+  <button class="action-bar-btn wa" onclick="sendWA()">📱 WA</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────────
+const S = {
+  E:null, V:null, M:null, intub:false,
+  pupils:{R:{size:null,react:null},L:{size:null,react:null}}
+};
+
+const LABELS = {
+  E:{4:'Spontaneous',3:'To Voice',2:'To Pain',1:'None'},
+  V:{5:'Oriented',4:'Confused',3:'Words',2:'Sounds',1:'None'},
+  M:{6:'Obeys',5:'Localises',4:'Withdraws',3:'Flex (Decorticate)',2:'Ext (Decerebrate)',1:'None'}
+};
+
+// Auto-fill date and time
+function updateDateTime(){
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  const timeStr = now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  const el = document.getElementById('autoDateTime');
+  if(el) el.textContent = dateStr + ' · ' + timeStr;
+}
+updateDateTime();
+setInterval(updateDateTime, 30000); // refresh every 30s
+
+// ── SCORE SELECT ───────────────────────────────────
+function sel(key, val){
+  S[key] = val;
+
+  // Buttons
+  document.querySelectorAll('#card'+key+' .score-btn').forEach(b=>{
+    b.classList.toggle('sel', parseInt(b.getAttribute('onclick').match(/\d+/)[0])===val);
+  });
+
+  // Pill
+  const pill = document.getElementById('pill'+key);
+  if(pill){ pill.textContent=key+val; pill.classList.add('set'); }
+
+  // Card active
+  document.getElementById('card'+key).classList.add('active');
+
+  updateTotal();
+}
+
+// ── INTUBATED ──────────────────────────────────────
+function toggleIntub(on){
+  S.intub = on;
+  S.V = null;
+  const grid = document.getElementById('verbalGrid');
+  const pill = document.getElementById('pillV');
+  const cardV = document.getElementById('cardV');
+
+  if(on){
+    if(grid) grid.style.opacity='.35';
+    if(pill){ pill.textContent='VT'; pill.classList.add('set'); }
+    if(cardV) cardV.classList.add('active');
+    document.querySelectorAll('#cardV .score-btn').forEach(b=>b.classList.remove('sel'));
+  } else {
+    if(grid) grid.style.opacity='1';
+    if(pill){ pill.textContent='—'; pill.classList.remove('set'); }
+    if(cardV) cardV.classList.remove('active');
+  }
+  updateTotal();
+}
+
+// ── TOTAL ──────────────────────────────────────────
+function updateTotal(){
+  const el = document.getElementById('totalWrap');
+  const E=S.E, V=S.V, M=S.M, intub=S.intub;
+  const vReady = intub || V!==null;
+
+  if(E!==null && vReady && M!==null){
+    const vVal = intub?0:V;
+    const total = E+vVal+M;
+    const vStr  = intub?'T':V;
+
+    let sev, col, desc;
+    if(intub){
+      const adj=E+M;
+      if(adj>=11)     {sev='Mild';    col='#0a7c42'; desc='E+M ≥ 11';}
+      else if(adj>=7) {sev='Moderate';col='#b45309'; desc='E+M 7–10';}
+      else            {sev='Severe';  col='#c0392b'; desc='GCS ≤ 8T — consider airway';}
+    } else {
+      if(total>=13)     {sev='Mild';    col='#0a7c42'; desc='GCS ≥ 13';}
+      else if(total>=9) {sev='Moderate';col='#b45309'; desc='GCS 9–12';}
+      else              {sev='Severe';  col='#c0392b'; desc='GCS ≤ 8 — intubation threshold';}
+    }
+
+    el.innerHTML = `
+      <div class="total-card" style="background:${col};">
+        <div class="total-inner">
+          <div class="total-left-side">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:6px;">GCS Total</div>
+            <div class="total-num">${total}<span class="total-num-sub">/${intub?'15T':'15'}</span></div>
+            <div style="font-size:12px;color:rgba(255,255,255,.60);margin-top:6px;font-style:italic;">E${E} + V${vStr} + M${M}</div>
+          </div>
+          <div class="total-right-side" style="text-align:right;">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px;">Severity</div>
+            <div class="sev-badge">${sev}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.60);margin-top:4px;">${desc}</div>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    const filled = [E!==null, vReady, M!==null].filter(Boolean).length;
+    el.innerHTML = `
+      <div class="total-pending">
+        <div class="total-pending-icon">⏳</div>
+        <div class="total-pending-text">
+          <strong>${filled}/3 components entered</strong><br>
+          Select all three scores to calculate total.
+        </div>
+      </div>`;
+  }
+}
+
+// ── PUPILS ─────────────────────────────────────────
+function setPupil(side, type, val){
+  S.pupils[side][type] = val;
+  const prefix = 'p'+side+(type==='size'?'Size':'React');
+  const cls = type==='size'?'p-btn':'p-react-btn';
+  document.querySelectorAll('#'+prefix+' .'+cls).forEach(b=>{
+    const bv = type==='size' ? parseInt(b.textContent) : b.classList[1];
+    b.classList.toggle('sel', bv===val);
+  });
+}
+
+// ── CONTEXT ────────────────────────────────────────
+function setCtx(text){
+  const inp = document.getElementById('clinCtx');
+  if(!inp) return;
+  inp.value = inp.value ? inp.value+', '+text : text;
+}
+
+// ── BUILD NOTE ─────────────────────────────────────
+function buildNote(){
+  const name  = document.getElementById('patName').value.trim();
+  const ageEl = document.getElementById('patAge');
+  const age = ageEl.dataset.val || document.getElementById('ageDisplay').textContent.replace('Select','').trim();
+  const uhid  = document.getElementById('patUhid').value.trim();
+  const dtEl = document.getElementById('autoDateTime');
+  const dtText = dtEl ? dtEl.textContent : '';
+  const date = dtText.split(' · ')[0] || new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  const time = dtText.split(' · ')[1] || new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  const ctx   = document.getElementById('clinCtx').value.trim();
+  const imp   = document.getElementById('impression').value.trim();
+  const plan  = document.getElementById('plan').value.trim();
+
+  const E=S.E, V=S.V, M=S.M, intub=S.intub;
+  const vReady = intub||V!==null;
+
+  let gcs = '';
+  if(E!==null) gcs += 'Eye Opening: '+E+' — '+LABELS.E[E]+'\n';
+  gcs += 'Verbal Response: '+(intub?'T (Intubated)':V!==null?V+' — '+LABELS.V[V]:'Not recorded')+'\n';
+  if(M!==null) gcs += 'Motor Response: '+M+' — '+LABELS.M[M]+'\n';
+  if(E!==null&&vReady&&M!==null){
+    const total=intub?E+M:E+(V||0)+M;
+    const vStr=intub?'T':V;
+    const label=total>=13?'Mild':total>=9?'Moderate':'Severe';
+    gcs += '\nGCS Total: E'+E+' V'+vStr+' M'+M+' = '+total+(intub?'T':'')+'/15 ('+label+')';
+  }
+
+  const pR=S.pupils.R, pL=S.pupils.L;
+  let pup='';
+  if(pR.size||pR.react) pup+='Right: '+(pR.size?pR.size+'mm ':'')+( pR.react||'')+'\n';
+  if(pL.size||pL.react) pup+='Left: ' +(pL.size?pL.size+'mm ':'')+( pL.react||'');
+  if(!pup) pup='Not recorded';
+
+  return {name,age,uhid,date,time,ctx,gcs,pup,imp,plan};
+}
+
+// ── PREVIEW ────────────────────────────────────────
+function showPreview(){
+  const d = buildNote();
+  document.getElementById('prevName').textContent = d.name||'Patient';
+  document.getElementById('prevMeta').textContent =
+    [d.age,d.uhid,d.date+' · '+d.time].filter(Boolean).join(' · ');
+
+  const secs=[
+    d.ctx ? {t:'Clinical Context',b:d.ctx} : null,
+    {t:'GCS Score',b:d.gcs||'Not recorded'},
+    {t:'Pupils',b:d.pup},
+    d.imp  ? {t:'Impression',b:d.imp}  : null,
+    d.plan ? {t:'Plan',b:d.plan}        : null,
+  ].filter(Boolean);
+
+  document.getElementById('prevBody').innerHTML = secs.map(s=>`
+    <div class="prev-sec">
+      <div class="prev-sec-title">${s.t}</div>
+      <div class="prev-sec-body">${s.b}</div>
+    </div>`).join('');
+
+  const wrap = document.getElementById('previewWrap');
+  document.getElementById('previewHeader').style.display='block';
+  wrap.style.display='block';
+  wrap.scrollIntoView({behavior:'smooth',block:'start'});
+  showToast('Preview ready');
+}
+
+// ── COPY ───────────────────────────────────────────
+function copyNote(){
+  const d=buildNote();
+  let t='GCS ASSESSMENT\n──────────────────────────\n';
+  if(d.name) t+='Patient: '+d.name+'\n';
+  if(d.age)  t+='Age/Sex: '+d.age+'\n';
+  if(d.uhid) t+='UHID: '+d.uhid+'\n';
+  t+='Date: '+d.date+' · '+d.time+'\n──────────────────────────\n\n';
+  if(d.ctx)  t+='CLINICAL CONTEXT\n'+d.ctx+'\n\n';
+  t+='GCS SCORE\n'+d.gcs+'\n\nPUPILS\n'+d.pup+'\n\n';
+  if(d.imp)  t+='IMPRESSION\n'+d.imp+'\n\n';
+  if(d.plan) t+='PLAN\n'+d.plan+'\n';
+  navigator.clipboard.writeText(t)
+    .then(()=>showToast('Copied to clipboard'))
+    .catch(()=>showToast('Copy failed'));
+}
+
+// ── WHATSAPP ───────────────────────────────────────
+function sendWA(){
+  const d=buildNote();
+  let t='*GCS ASSESSMENT*\n━━━━━━━━━━━━━━━━━━━━━━\n';
+  if(d.name) t+='*Patient:* '+d.name+'\n';
+  if(d.age)  t+='*Age/Sex:* '+d.age+'\n';
+  if(d.uhid) t+='*UHID:* '+d.uhid+'\n';
+  t+='*Date:* '+d.date+' · '+d.time+'\n━━━━━━━━━━━━━━━━━━━━━━\n\n';
+  if(d.ctx)  t+='*CLINICAL CONTEXT*\n'+d.ctx+'\n\n';
+  t+='*GCS SCORE*\n'+d.gcs+'\n\n*PUPILS*\n'+d.pup+'\n\n';
+  if(d.imp)  t+='*IMPRESSION*\n'+d.imp+'\n\n';
+  if(d.plan) t+='*PLAN*\n'+d.plan+'\n';
+  t+='━━━━━━━━━━━━━━━━━━━━━━\n_Sent from WOYZ_';
+  window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank');
+}
+
+// ── RESET ──────────────────────────────────────────
+function resetAll(){
+  S.E=null;S.V=null;S.M=null;S.intub=false;
+  S.pupils={R:{size:null,react:null},L:{size:null,react:null}};
+  document.querySelectorAll('.score-btn,.p-btn,.p-react-btn').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.score-pill').forEach(p=>{p.textContent='—';p.classList.remove('set');});
+  document.querySelectorAll('.gcs-comp-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('intubChk').checked=false;
+  document.getElementById('verbalGrid').style.opacity='1';
+  ['clinCtx','impression','plan','patName','patAge','patUhid'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('previewWrap').style.display='none';
+  document.getElementById('previewHeader').style.display='none';
+  updateTotal();
+  showToast('Reset — ready for next patient');
+}
+
+// ── TOAST ──────────────────────────────────────────
+let tt=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  if(tt)clearTimeout(tt);
+  tt=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+updateTotal();
+
+// ── AGE/SEX WHEEL PICKER ──────────────────────────
+let pickerAge = 40;
+let pickerSex = 'M';
+
+function buildWheel(){
+  // Age wheel: 1-120
+  const ageScroll = document.getElementById('ageScroll');
+  if(!ageScroll) return;
+  ageScroll.innerHTML = '';
+  for(let i=1;i<=120;i++){
+    const div = document.createElement('div');
+    div.className = 'wheel-item';
+    div.textContent = i;
+    div.dataset.val = i;
+    ageScroll.appendChild(div);
+  }
+  // Scroll to default age
+  setTimeout(()=>{
+    const target = ageScroll.children[pickerAge-1];
+    if(target) target.scrollIntoView({block:'center'});
+  }, 50);
+
+  // Sex wheel
+  const sexScroll = document.getElementById('sexScroll');
+  sexScroll.innerHTML = '';
+  ['Male','Female','Other'].forEach(s=>{
+    const div = document.createElement('div');
+    div.className = 'wheel-item';
+    div.textContent = s;
+    div.dataset.val = s[0]; // M, F, O
+    sexScroll.appendChild(div);
+  });
+  // Scroll to M by default
+  setTimeout(()=>{
+    sexScroll.children[0].scrollIntoView({block:'center'});
+  }, 50);
+
+  // Attach scroll listeners
+  attachScrollListener(ageScroll, 'age');
+  attachScrollListener(sexScroll, 'sex');
+}
+
+function attachScrollListener(el, type){
+  let ticking = false;
+  el.addEventListener('scroll', ()=>{
+    if(!ticking){
+      requestAnimationFrame(()=>{
+        highlightCenter(el, type);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+}
+
+function highlightCenter(scrollEl, type){
+  const items = scrollEl.querySelectorAll('.wheel-item');
+  const containerTop = scrollEl.getBoundingClientRect().top;
+  const containerMid = containerTop + scrollEl.clientHeight/2;
+
+  let closest = null;
+  let closestDist = Infinity;
+
+  items.forEach(item=>{
+    const itemMid = item.getBoundingClientRect().top + item.clientHeight/2;
+    const dist = Math.abs(itemMid - containerMid);
+    item.classList.remove('center');
+    if(dist < closestDist){
+      closestDist = dist;
+      closest = item;
+    }
+  });
+
+  if(closest){
+    closest.classList.add('center');
+    if(type==='age') pickerAge = parseInt(closest.dataset.val);
+    if(type==='sex') pickerSex = closest.dataset.val;
+  }
+}
+
+function openAgePicker(){
+  buildWheel();
+  document.getElementById('agePicker').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePicker(){
+  document.getElementById('agePicker').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closePickerIfBg(e){
+  if(e.target === document.getElementById('agePicker')) closePicker();
+}
+
+function confirmPicker(){
+  const sexLabel = {M:'M',F:'F',O:'Other'};
+  const display = pickerAge + ' ' + pickerSex;
+  const ageDisplay = document.getElementById('ageDisplay');
+  if(ageDisplay){
+    ageDisplay.textContent = display;
+    ageDisplay.style.color = 'var(--text)';
+  }
+  // Store for note building
+  document.getElementById('patAge').dataset.val = display;
+  closePicker();
+  showToast(pickerAge + ' years · '+(['M','F'].includes(pickerSex)?pickerSex==='M'?'Male':'Female':'Other'));
+}
+
+// Age is handled directly in buildNote via dataset.val
+
+</script>
+
+<!-- Age/Sex Wheel Picker -->
+<div class="picker-overlay" id="agePicker" onclick="closePickerIfBg(event)">
+  <div class="picker-sheet">
+    <div class="picker-header">
+      <div class="picker-cancel" onclick="closePicker()">Cancel</div>
+      <div class="picker-title">Age &amp; Sex</div>
+      <div class="picker-done" onclick="confirmPicker()">Done</div>
+    </div>
+    <div class="picker-body">
+      <div class="wheel-col" id="ageCol">
+        <div class="wheel-col-label">Age</div>
+        <div class="wheel-highlight"></div>
+        <div class="wheel-scroll" id="ageScroll"></div>
+      </div>
+      <div class="wheel-col" id="sexCol">
+        <div class="wheel-col-label">Sex</div>
+        <div class="wheel-highlight"></div>
+        <div class="wheel-scroll" id="sexScroll"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
